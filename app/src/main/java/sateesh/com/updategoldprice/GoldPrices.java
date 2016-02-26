@@ -37,19 +37,20 @@ import java.util.Map;
 
 public class GoldPrices extends AppCompatActivity {
 
+    String IPAddress = "192.168.1.113";
     TextView Date_txt, Gold_1_Gram_txt, Silver_1_Gram_text, City_Name;
     EditText Gold_8_Gram_EditText, Silver_1_Gram_EditText;
-    TextView selectedDate, Gold_1_Gram_TextView, Gold_Change_TextView, Silver_Change_TextView;
-    Spinner Cities_spinner;
+    TextView selectedDate, Gold_1_Gram_TextView;
+    Spinner Cities_spinner, Silver_Change_Spinner, Gold_Change_Spinner;
     Button Submit_btn, Load_btn, Date_btn;
     String[] Month_Names = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
 
     ArrayList<String> cities_list;
     ArrayAdapter<String> citiesAdapter;
-    String insertUrl = "http://192.168.1.128/gold_smart_updates/insertPrice.php";
-    String showUrl = "http://192.168.1.128/gold_smart_updates/showLastPrice.php";
-    String showCitiesUrl = "http://192.168.1.128/gold_smart_updates/showCities.php";
-    String show_Data_City_level_Url = "http://192.168.1.128/gold_smart_updates/showLastPriceWithCity.php";
+    String insertUrl = "http://" + IPAddress + "/gold_smart_updates/insertPrice.php";
+    String showUrl = "http://" + IPAddress + "/gold_smart_updates/showLastPrice.php";
+    String showCitiesUrl = "http://" + IPAddress + "/gold_smart_updates/showCities.php";
+    String show_Data_City_level_Url = "http://" + IPAddress + "/gold_smart_updates/showLastPriceWithCity.php";
     RequestQueue requestQueue;
     String selectedCity;
 
@@ -74,8 +75,8 @@ public class GoldPrices extends AppCompatActivity {
         Gold_8_Gram_EditText = (EditText) findViewById(R.id.gold_22ct_8_grams);
         Gold_1_Gram_TextView = (TextView) findViewById(R.id.gold_22ct_1_gram);
         Silver_1_Gram_EditText = (EditText) findViewById(R.id.silver_1_gram);
-        Gold_Change_TextView = (TextView) findViewById(R.id.gold_change);
-        Silver_Change_TextView = (TextView) findViewById(R.id.silver_change);
+        Gold_Change_Spinner = (Spinner) findViewById(R.id.gold_change);
+        Silver_Change_Spinner = (Spinner) findViewById(R.id.silver_change);
 
         Gold_1_Gram_txt = (TextView) findViewById(R.id.one_gram_gold_value);
         Silver_1_Gram_text = (TextView) findViewById(R.id.one_gram_silver_value);
@@ -106,19 +107,22 @@ public class GoldPrices extends AppCompatActivity {
                 int T_Silver_1_Gram = Integer.parseInt(Silver_1_Gram_EditText.getText().toString());
 
                 if (Y_Gold_1_Gram == T_Gold_1_Gram) {
-                    Gold_Change_TextView.setText("No Change");
+                    Gold_Change_Spinner.setSelection(2);
                 } else if (Y_Gold_1_Gram > T_Gold_1_Gram) {
-                    Gold_Change_TextView.setText("Decreased");
+                    Gold_Change_Spinner.setSelection(1);
                 } else if (Y_Gold_1_Gram < T_Gold_1_Gram) {
-                    Gold_Change_TextView.setText("Increased");
+                    Gold_Change_Spinner.setSelection(0);
                 }
 
                 if (Y_Silver_1_Gram == T_Silver_1_Gram) {
-                    Silver_Change_TextView.setText("No Change");
+//                    Silver_Change_TextView.setText("No Change");
+                    Silver_Change_Spinner.setSelection(2);
                 } else if (Y_Silver_1_Gram > T_Silver_1_Gram) {
-                    Silver_Change_TextView.setText("Decreased");
+//                    Silver_Change_TextView.setText("Decreased");
+                    Silver_Change_Spinner.setSelection(1);
                 } else if (Y_Silver_1_Gram < T_Silver_1_Gram) {
-                    Silver_Change_TextView.setText("Increased");
+//                    Silver_Change_TextView.setText("Increased");
+                    Silver_Change_Spinner.setSelection(0);
                 }
 
 
@@ -132,37 +136,46 @@ public class GoldPrices extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, insertUrl, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.v("Sateesh", "submit onResponse");
-                        Toast toast = Toast.makeText(getApplicationContext(), "Inserted", Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.v("Sateesh ", "**** Submit Insert Error is " + error.toString());
+                if(selectedDate == null || Gold_8_Gram_EditText == null || Silver_1_Gram_EditText == null){
+                    Toast toast = Toast.makeText(getApplicationContext(), "Please enter all Details", Toast.LENGTH_SHORT);
+                    toast.show();
 
-                    }
-                }) {
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
+                }else {
+                    StringRequest stringRequest = new StringRequest(Request.Method.POST, insertUrl, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.v("Sateesh", "submit onResponse");
+                            Toast toast = Toast.makeText(getApplicationContext(), "Inserted", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.v("Sateesh ", "**** Submit Insert Error is " + error.toString());
 
-                        Map<String, String> parameters = new HashMap<String, String>();
-                        parameters.put("PriceDate", selectedDate.getText().toString());
-                        parameters.put("City", City_Name.getText().toString());
-                        parameters.put("Gold_22ct_8_gram", Gold_8_Gram_EditText.getText().toString());
-                        parameters.put("Gold_22ct_1_gram", Gold_1_Gram_TextView.getText().toString());
-                        parameters.put("Silver_1_gram", Silver_1_Gram_EditText.getText().toString());
-                        parameters.put("Gold_Change", Gold_Change_TextView.getText().toString());
-                        parameters.put("Silver_Change", Silver_Change_TextView.getText().toString());
-                        Log.v("Sateesh", "submit getParams");
-                        return parameters;
+                        }
+                    }) {
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
 
-                    }
-                };
-                requestQueue.add(stringRequest);
+                            Map<String, String> parameters = new HashMap<String, String>();
+                            parameters.put("PriceDate", selectedDate.getText().toString());
+                            parameters.put("City", City_Name.getText().toString());
+                            parameters.put("Gold_22ct_8_gram", Gold_8_Gram_EditText.getText().toString());
+                            parameters.put("Gold_22ct_1_gram", Gold_1_Gram_TextView.getText().toString());
+                            parameters.put("Silver_1_gram", Silver_1_Gram_EditText.getText().toString());
+                            parameters.put("Gold_Change", Gold_Change_Spinner.getSelectedItem().toString());
+                            parameters.put("Silver_Change", Silver_Change_Spinner.getSelectedItem().toString());
+                            Log.v("Sateesh", "submit getParams");
+                            return parameters;
+
+                        }
+                    };
+                    requestQueue.add(stringRequest);
+                }
+
+
+
 
             }
         });

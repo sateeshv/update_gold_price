@@ -103,7 +103,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center"
+                        android:gravity="left"
                         android:text="" />
 
                     <Button
@@ -196,13 +196,15 @@
 
                     <TextView />
 
-                    <TextView
-                        android:id="@+id/gold_change"
+                    <Spinner
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:gravity="center" />
+                        android:id="@+id/gold_change"
+                        android:gravity="center"
+                        android:drawSelectorOnTop="true"
+                        android:entries="@array/change"
 
-                    <TextView />
+                        />
                 </TableRow>
 
                 <TableRow android:layout_margin="5dp">
@@ -215,13 +217,22 @@
 
                     <TextView />
 
-                    <TextView
-                        android:id="@+id/silver_change"
+                    <!--<TextView-->
+                        <!--android:id="@+id/silver_change"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:gravity="center" />-->
+
+                    <!--<TextView />-->
+                    <Spinner
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:gravity="center" />
+                        android:id="@+id/silver_change"
+                        android:gravity="center"
+                        android:drawSelectorOnTop="true"
+                        android:entries="@array/change"
 
-                    <TextView />
+                    />
                 </TableRow>
 
             </TableLayout>
